@@ -37,6 +37,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Suaviza el scroll en iPhones */
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 100 100'%3E%3Cpath d='M50 65s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3Cpath d='M0 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7zM100 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3C/svg%3E");
 }
 
@@ -82,7 +85,7 @@
 
     /* --- TARJETA PRINCIPAL --- */
     .card{
-      width:100%; max-width:550px; max-height: 85vh;
+      width:100%; max-width:550px; /*max-height: 85vh;*/ min-height: auto;
       background: linear-gradient(to right, var(--baby-pink) 0%, var(--baby-pink) 15%, var(--card-base) 40%, var(--card-base) 60%, var(--baby-blue) 85%, var(--baby-blue) 100%);
       border-radius:50px; box-shadow:0 20px 50px rgba(0,0,0,0.1);
       padding: 30px 25px 40px; text-align:center; position:relative;
@@ -405,6 +408,7 @@
   </script>
 </body>
 </html>
+
 
 
 
