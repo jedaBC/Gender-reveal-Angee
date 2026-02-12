@@ -372,7 +372,11 @@
         const msg = document.getElementById('successMessage');
         if(choice === 'si') {
           title.innerText = "¡Qué alegría!";
-          msg.innerHTML = `¡Gracias por confirmar, <b>${name}</b>!<br><br>Estamos felices de recibirte junto a tus <b>${count}</b> invitados. ✨`;
+          msg.innerHTML = `¡Gracias por confirmar, <b>${name}</b>!<br><br>
+          Estamos felices de recibirte junto a tus <b>${count}</b> invitados.<br><br>
+          🧸 <b>Un detalle especial:</b><br>
+          Si crees que será <b>niño</b>, puedes traer un paquete de <b>pañales</b>. 
+          Si crees que será <b>niña</b>, ¡unas <b>toallitas húmedas</b>! ✨`;
           confetti({ particleCount: 180, spread: 85, origin: { y: 0.6 }, colors: ['#ffd700', '#e0b96a', '#fffce0', '#cfa34f'] });
         } else {
           title.innerText = "Te extrañaremos";
@@ -408,6 +412,7 @@
   </script>
 </body>
 </html>
+
 
 
 
