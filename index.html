@@ -14,9 +14,13 @@
       --gold-dark: #cfa34f;
       --sparkle-yellow: #ffed00; 
       --brown:#6b4f2c;
+     /*
       --card-base:#fffaf6;
       --baby-pink: #fdf2f5;
-      --baby-blue: #f2f7fd;
+      --baby-blue: #f2f7fd;*/
+        --baby-pink: #fce4ec; /* Un toque más rosado que el anterior */
+  --baby-blue: #e3f2fd; /* Un toque más azulado que el anterior */
+  --card-base: #ffffff; /* Blanco puro para que el contraste ayude */
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -71,7 +75,7 @@
     /* --- TARJETA PRINCIPAL --- */
     .card{
       width:100%; max-width:550px; max-height: 95vh;
-      background: linear-gradient(to right, var(--baby-pink) 0%, var(--card-base) 40%, var(--card-base) 60%, var(--baby-blue) 100%);
+      background: linear-gradient(to right, var(--baby-pink) 0%, var(--baby-pink) 15%, var(--card-base) 40%, var(--card-base) 60%, var(--baby-blue) 85%, var(--baby-blue) 100%);
       border-radius:50px; box-shadow:0 20px 50px rgba(0,0,0,0.1);
       padding: 30px 25px 40px; text-align:center; position:relative;
       display:flex; flex-direction:column; align-items:center; justify-content: center; gap: 12px; z-index: 1;
@@ -377,3 +381,4 @@
   </script>
 </body>
 </html>
+
