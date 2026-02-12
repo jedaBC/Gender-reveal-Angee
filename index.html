@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Gender Reveal de Angee</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -25,13 +25,19 @@
 
     *{box-sizing:border-box;margin:0;padding:0}
 
-    body{
-      height: 100vh; width: 100vw; overflow: hidden;
-      font-family:'Baloo 2', cursive; color:var(--brown);
-      background-color: #fcf8f3;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 100 100'%3E%3Cpath d='M50 65s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3Cpath d='M0 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7zM100 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3C/svg%3E");
-      display: flex; align-items: center; justify-content: center; padding: 10px; position: relative;
-    }
+    body {
+  height: 100vh;
+  height: 100dvh; 
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Baloo 2', cursive;
+  color: var(--brown);
+  background-color: #fcf8f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
     /* --- TELÓN DE ENTRADA Y LOADER --- */
     .overlay {
@@ -60,7 +66,7 @@
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- ESTRELLAS DE BELÉN --- */
+    /* --- max-height--- */
     .firefly {
       position: absolute; width: 2px; height: 2px; background-color: var(--sparkle-yellow);
       border-radius: 50%; box-shadow: 0 0 8px 2px var(--sparkle-yellow);
@@ -74,7 +80,7 @@
 
     /* --- TARJETA PRINCIPAL --- */
     .card{
-      width:100%; max-width:550px; max-height: 95vh;
+      width:100%; max-width:550px; max-height: 85vh;
       background: linear-gradient(to right, var(--baby-pink) 0%, var(--baby-pink) 15%, var(--card-base) 40%, var(--card-base) 60%, var(--baby-blue) 85%, var(--baby-blue) 100%);
       border-radius:50px; box-shadow:0 20px 50px rgba(0,0,0,0.1);
       padding: 30px 25px 40px; text-align:center; position:relative;
@@ -381,5 +387,6 @@
   </script>
 </body>
 </html>
+
 
 
