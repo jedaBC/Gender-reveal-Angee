@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gender Reveal de Angee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root{
+      --gold:#e0b96a;
+      --gold-light: #eac376;
+      --gold-dark: #cfa34f;
+      --sparkle-yellow: #ffed00; 
+      --brown:#6b4f2c;
+      --card-base:#fffaf6;
+      --baby-pink: #fdf2f5;
+      --baby-blue: #f2f7fd;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      height: 100vh; width: 100vw; overflow: hidden;
+      font-family:'Baloo 2', cursive; color:var(--brown);
+      background-color: #fcf8f3;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 100 100'%3E%3Cpath d='M50 65s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3Cpath d='M0 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7zM100 15s-5-3.5-5-7a3 3 0 0 1 5-1.8 3 3 0 0 1 5 1.8c0 3.5-5 7-5 7z' fill='%23e0b96a' fill-opacity='0.25'/%3E%3C/svg%3E");
+      display: flex; align-items: center; justify-content: center; padding: 10px; position: relative;
+    }
+
+    /* --- ESTRELLAS DE BELÉN --- */
+    .firefly {
+      position: absolute; width: 2px; height: 2px; background-color: var(--sparkle-yellow);
+      border-radius: 50%; box-shadow: 0 0 8px 2px var(--sparkle-yellow);
+      opacity: 0; pointer-events: none; z-index: -1;
+      display: flex; align-items: center; justify-content: center;
+      animation: twinkle var(--duration) ease-in-out infinite var(--delay);
+    }
+    .firefly::before { content: ''; position: absolute; width: 1.5px; height: 34px; background: linear-gradient(to bottom, transparent, var(--sparkle-yellow) 50%, transparent); }
+    .firefly::after { content: ''; position: absolute; width: 14px; height: 1.5px; background: linear-gradient(to right, transparent, var(--sparkle-yellow) 50%, transparent); }
+    @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } }
+
+    /* --- TARJETA PRINCIPAL --- */
+    .card{
+      width:100%; max-width:550px; max-height: 95vh;
+      /* Gradiente de fondo ajustado para más color */
+      background: linear-gradient(to right, 
+        var(--baby-pink) 0%, 
+        var(--card-base) 40%, 
+        var(--card-base) 60%, 
+        var(--baby-blue) 100%);
+      border-radius:50px; box-shadow:0 20px 50px rgba(0,0,0,0.1);
+      padding: 30px 25px 40px; text-align:center; position:relative;
+      display:flex; flex-direction:column; align-items:center; justify-content: center; gap: 12px; z-index: 1;
+    }
+    .card::before{ content:""; position:absolute; inset:12px; border-radius:40px; border:2px dashed var(--gold); pointer-events: none; z-index: 2; }
+
+    /* --- CORRECCIÓN DE NUBES --- */
+    .clouds-bg { position: absolute; top: 0; left: 0; width: 100%; height: 35%; z-index: 0; opacity: 0.15; border-radius: 50px 50px 0 0; overflow: hidden; }
+    .clouds-bg img { position: absolute; top: 0; height: 100%; width: 85%; object-fit: cover; }
+    
+    .clouds-bg img:nth-child(1) { 
+        left: -15%; 
+        transform: scaleX(-1); 
+    }
+
+    .clouds-bg img:nth-child(2) { 
+        left: 28%; /* Un poquito más a la izquierda para solapar mejor */
+        /* LA MAGIA: Máscara de degradado en el borde izquierdo */
+        /* Esto hace que el inicio de la imagen sea transparente y se desvanezca suavemente */
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%);
+        mask-image: linear-gradient(to right, transparent 0%, black 15%);
+    }
+    /* --------------------------- */
+
+    h1{ font-family: 'Dancing Script', cursive; font-size: clamp(2.8rem, 8vw, 3.8rem); color: var(--gold); line-height: 1; margin-top: 15px; }
+    .subtitle{ font-size: 1.1rem; margin-top: -5px; }
+    .bears{ display:flex; justify-content:center; gap:30px; }
+    .bears img{ width: clamp(100px, 25vw, 130px); height: auto; animation: float 5s ease-in-out infinite; }
+    .bears img:nth-child(2){animation-delay:2.5s}
+    @keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .story{ max-width:400px; font-size:1.1rem; line-height:1.4; }
+    .story span{ font-family: 'Dancing Script', cursive; color:var(--gold); font-weight:700; font-size: 1.4rem; }
+    .date{ font-weight: 600; font-size:1.05rem; color: var(--brown); }
+    .countdown{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width: 100%; max-width:380px; }
+    .countdown div{ background: rgba(255,255,255,0.7); border-radius:18px; padding:8px 2px; font-size: 0.75rem; text-transform: uppercase; }
+    .countdown span{ display:block; font-size:1.4rem; font-weight:600; color: var(--gold); }
+
+    /* --- BOTONES 3D --- */
+    .btn-3d{
+      padding:14px 40px; border: 1px solid var(--gold-light); border-radius:50px;
+      background: linear-gradient(to bottom, var(--gold), var(--gold-dark));
+      color:#fff; font-family: 'Baloo 2', cursive; font-weight: 600; font-size:1rem;
+      cursor:pointer; position: relative;
+      box-shadow: 0 8px 15px rgba(224, 185, 106, 0.3), inset 0 2px 3px rgba(255, 255, 255, 0.5), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+    }
+    .btn-3d:hover:not(.disabled){ transform: translateY(-2px); box-shadow: 0 10px 20px rgba(224, 185, 106, 0.4); }
+    .btn-3d.disabled { opacity: 0.6; filter: grayscale(0.5); cursor: default; }
+    .btn-secondary { background: linear-gradient(to bottom, #d6d6d6, #a8a8a8); border-color: #e0e0e0; box-shadow: 0 8px 15px rgba(0,0,0,0.1), inset 0 2px 3px rgba(255, 255, 255, 0.5), inset 0 -3px 3px rgba(0, 0, 0, 0.05);}
+
+    footer{ font-size:.95rem; opacity:.8; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
+    .angee-signature { font-family: 'Dancing Script', cursive; font-size: 2.5rem; font-weight: 700; background: linear-gradient(90deg, var(--gold) 25%, #fffce0 50%, var(--gold) 75%); background-size: 200% auto; background-clip: text; -webkit-background-clip: text; color: transparent; animation: shineText 4s linear infinite; line-height: 1.2; padding: 5px 0; }
+    @keyframes shineText { to { background-position: -200% center; } }
+
+    /* --- MODALES --- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(107, 79, 44, 0.4); backdrop-filter: blur(5px);
+      display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-card {
+      width: 90%; max-width: 450px; background: linear-gradient(to right, var(--baby-pink), var(--card-base), var(--baby-blue));
+      border-radius: 40px; padding: 45px 30px; position: relative; text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.2); animation: popIn 0.3s ease-out;
+    }
+    .modal-card::before { content:""; position:absolute; inset:12px; border-radius:30px; border:2px dashed var(--gold); pointer-events: none; }
+    
+    .close-x {
+      position: absolute; top: 25px; right: 25px; width: 25px; height: 25px;
+      cursor: pointer; opacity: 0.3; transition: opacity 0.2s; z-index: 10;
+    }
+    .close-x:hover { opacity: 0.8; }
+    .close-x::before, .close-x::after {
+      content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+      background-color: var(--brown); transform: rotate(45deg);
+    }
+    .close-x::after { transform: rotate(-45deg); }
+
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    
+    .modal-title { font-family: 'Dancing Script', cursive; font-size: 2.2rem; color: var(--gold); margin-bottom: 20px; line-height: 1.1; }
+    .form-group { margin-bottom: 20px; text-align: left; }
+    label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; margin-left: 10px; }
+    input {
+      width: 100%; padding: 12px 20px; border-radius: 25px; border: 1.5px solid var(--gold-light);
+      font-family: 'Baloo 2', cursive; font-size: 1rem; color: var(--brown); background: rgba(255,255,255,0.8);
+      outline: none; transition: all 0.2s;
+    }
+    input.error { border-color: #ff6b6b; box-shadow: 0 0 10px rgba(255, 107, 107, 0.4); background: #fffcfc; }
+
+    .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
+
+    @media(max-height: 700px){
+      .card { gap: 8px; padding: 20px 20px 30px; }
+      h1 { font-size: 2.5rem; }
+      .angee-signature { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="clouds-bg"><img src="nube.png" alt=""><img src="nube.png" alt=""></div>
+    <h1>Había una vez…</h1>
+    <p class="subtitle">un pequeño corazón que estaba por llegar 💛</p>
+    <div class="bears"><img src="2osita.png" alt="Osita"><img src="2osito.png" alt="Osito"></div>
+    <p class="story">Muy pronto sabremos si nuestro bebé llegará envuelto en <span>dulzura rosa</span> o en <span>ternura celeste</span> 🧸✨</p>
+    <p class="date">📅 Sábado 21 de Febrero</p>
+    <div class="countdown">
+      <div><span id="d">0</span>Días</div>
+      <div><span id="h">0</span>Horas</div>
+      <div><span id="m">0</span>Min</div>
+      <div><span id="s">0</span>Seg</div>
+    </div>
+    <button class="btn-3d" onclick="openModal('rsvpModal')">Confirmar asistencia</button>
+    <footer>Con mucho amor ✨ | <span class="angee-signature">Angee</span></footer>
+  </div>
+
+  <div class="modal-overlay" id="rsvpModal">
+    <div class="modal-card">
+      <div class="close-x" onclick="closeModal('rsvpModal')"></div>
+      <h2 class="modal-title">¿Nos acompañas?</h2>
+      <div class="form-group">
+        <label>Tu nombre:</label>
+        <input type="text" id="guestName" placeholder="Escribe tu nombre aquí..." oninput="validateInput()">
+      </div>
+      <div class="form-group">
+        <label>¿Cuántas personas vienen?</label>
+        <input type="number" id="guestCount" value="1" min="1">
+      </div>
+      <div class="btn-group">
+        <button class="btn-3d disabled" id="btnYes" onclick="handleRSVP('si')">¡Si, allí estaré!</button>
+        <button class="btn-3d btn-secondary disabled" id="btnNo" onclick="handleRSVP('no')">No podré ir</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="close-x" onclick="closeModal('successModal')"></div>
+      <h2 class="modal-title" id="successTitle">¡Qué alegría!</h2>
+      <p id="successMessage" style="font-size: 1.15rem; line-height: 1.5;"></p>
+      <div class="btn-group">
+        <button class="btn-3d" onclick="closeModal('successModal')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Contador
+    const target = new Date('2026-02-21T18:00:00').getTime();
+    setInterval(()=>{
+      const diff = target - new Date().getTime();
+      if(diff <= 0) return;
+      document.getElementById('d').textContent = Math.floor(diff/(1000*60*60*24));
+      document.getElementById('h').textContent = Math.floor((diff/(1000*60*60))%24);
+      document.getElementById('m').textContent = Math.floor((diff/(1000*60))%60);
+      document.getElementById('s').textContent = Math.floor((diff/1000)%60);
+    }, 1000);
+
+    // Lógica de validación de botones
+    function validateInput() {
+      const name = document.getElementById('guestName');
+      const btnYes = document.getElementById('btnYes');
+      const btnNo = document.getElementById('btnNo');
+      
+      if(name.value.trim() !== "") {
+        name.classList.remove('error');
+        btnYes.classList.remove('disabled');
+        btnNo.classList.remove('disabled');
+      } else {
+        btnYes.classList.add('disabled');
+        btnNo.classList.add('disabled');
+      }
+    }
+
+    // Funciones Modales
+    function openModal(id) { 
+      if(id === 'rsvpModal') {
+          const nameInput = document.getElementById('guestName');
+          nameInput.value = "";
+          nameInput.classList.remove('error');
+          document.getElementById('guestCount').value = "1";
+          validateInput(); 
+      }
+      document.getElementById(id).style.display = 'flex'; 
+    }
+    
+    function closeModal(id) { 
+      document.getElementById(id).style.display = 'none'; 
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal-overlay')) {
+        closeAllModals();
+      }
+    }
+
+    document.onkeydown = function(evt) {
+      evt = evt || window.event;
+      if (evt.key === "Escape") {
+        closeAllModals();
+      }
+    };
+
+    // Manejo de Respuesta y Envío a Google Sheets
+    async function handleRSVP(choice) {
+      const nameInput = document.getElementById('guestName');
+      const countInput = document.getElementById('guestCount');
+      
+      if(nameInput.value.trim() === "") {
+        nameInput.classList.add('error');
+        nameInput.focus();
+        return;
+      }
+      
+      const name = nameInput.value.trim();
+      const count = countInput.value;
+      const attendance = (choice === 'si') ? "Sí asistirá" : "No podrá ir";
+
+      // --- TU URL DE GOOGLE APPS SCRIPT VA AQUÍ ---
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyinrjCvyhOslJUfnQM0EbLw_m61674tkNIC7NL-40Lg7j5yhESs-_7g3wyAE2qn_vT/exec'; 
+      // -------------------------------------------
+
+      const btn = (choice === 'si') ? document.getElementById('btnYes') : document.getElementById('btnNo');
+      const originalText = btn.innerText;
+      btn.innerText = "Enviando...";
+      btn.classList.add('disabled');
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ nombre: name, invitados: count, asistencia: attendance })
+        });
+
+        closeModal('rsvpModal');
+
+        const title = document.getElementById('successTitle');
+        const msg = document.getElementById('successMessage');
+
+        if(choice === 'si') {
+          title.innerText = "¡Qué alegría!";
+          msg.innerHTML = `¡Gracias por confirmar, <b>${name}</b>!<br><br>Estamos felices de que nos acompañes junto a tus <b>${count}</b> invitados.<br>¡Será un día inolvidable! ✨`;
+          confetti({ particleCount: 180, spread: 85, origin: { y: 0.6 }, colors: ['#ffd700', '#e0b96a', '#fffce0', '#cfa34f'] });
+        } else {
+          title.innerText = "Te extrañaremos";
+          msg.innerHTML = `Gracias por avisarnos, <b>${name}</b>.<br><br>Sentiremos mucho que no puedas venir, pero te enviaremos todo nuestro cariño. 🧸`;
+        }
+        
+        setTimeout(() => openModal('successModal'), 400);
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Hubo un pequeño problema al enviar. Inténtalo de nuevo, por favor.');
+      } finally {
+        btn.innerText = originalText;
+        btn.classList.remove('disabled');
+      }
+    }
+
+    // Estrellas
+    function createFireflies() {
+      const body = document.body;
+      const stars = 45; const cols = 7; const rows = 7;
+      let count = 0;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (count >= stars) break;
+          const firefly = document.createElement('div');
+          firefly.classList.add('firefly');
+          const xBase = (c * (100 / cols)); const yBase = (r * (100 / rows));
+          firefly.style.left = (xBase + Math.random() * 8 + 2) + 'vw';
+          firefly.style.top = (yBase + Math.random() * 8 + 2) + 'vh';
+          const duration = Math.random() * 3 + 2; const delay = Math.random() * 5;
+          firefly.style.setProperty('--duration', `${duration}s`);
+          firefly.style.setProperty('--delay', `${delay}s`);
+          body.appendChild(firefly);
+          count++;
+        }
+      }
+    }
+    createFireflies();
+  </script>
+</body>
+</html>
