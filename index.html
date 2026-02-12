@@ -29,15 +29,32 @@
       display: flex; align-items: center; justify-content: center; padding: 10px; position: relative;
     }
 
-    /* --- TELÓN DE ENTRADA (SPLASH SCREEN) --- */
+    /* --- TELÓN DE ENTRADA Y LOADER --- */
     .overlay {
       position: fixed; inset: 0;
       background: linear-gradient(135deg, var(--gold), var(--gold-dark));
       display: flex; align-items: center; justify-content: center;
       z-index: 2000; transition: opacity 0.8s ease;
     }
-    .overlay-content { text-align: center; padding: 20px; color: white; }
+    .overlay-content { text-align: center; padding: 20px; color: white; width: 100%; }
     .overlay.hidden { opacity: 0; pointer-events: none; }
+
+    /* Spinner de carga */
+    .loader {
+      width: 50px; height: 50px;
+      border: 5px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #startBtn { 
+      display: none; /* Se muestra solo al cargar todo */
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* --- ESTRELLAS DE BELÉN --- */
     .firefly {
@@ -149,9 +166,12 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-content">
-      <h2 class="modal-title" style="color: white;">La historia de Angee</h2>
-      <p style="margin-bottom: 25px; font-size: 1.1rem;">Haz clic para descubrir un pequeño gran secreto...</p>
-      <button class="btn-3d" onclick="startEverything()">Abrir Invitación 🧸</button>
+      <div id="loader" class="loader"></div>
+      <div id="startContainer">
+        <h2 class="modal-title" style="color: white;">La historia de Angee</h2>
+        <p id="loadingText" style="margin-bottom: 25px; font-size: 1.1rem;">Preparando la magia...</p>
+        <button id="startBtn" class="btn-3d" onclick="startEverything()">Abrir Invitación 🧸</button>
+      </div>
     </div>
   </div>
 
@@ -160,10 +180,13 @@
   </div>
 
   <div class="card">
-    <div class="clouds-bg"><img src="nube.png" alt=""><img src="nube.png" alt=""></div>
+    <div class="clouds-bg"><img src="nube.png" id="cloudImg1" alt=""><img src="nube.png" id="cloudImg2" alt=""></div>
     <h1>Había una vez…</h1>
     <p class="subtitle">un pequeño corazón que estaba por llegar 💛</p>
-    <div class="bears"><img src="2osita.png" alt="Osita"><img src="2osito.png" alt="Osito"></div>
+    <div class="bears">
+        <img src="2osita.png" id="bearImg1" alt="Osita">
+        <img src="2osito.png" id="bearImg2" alt="Osito">
+    </div>
     <p class="story">Muy pronto sabremos si nuestro bebé llegará envuelto en <span>dulzura rosa</span> o en <span>ternura celeste</span> 🧸✨</p>
     <p class="date">📅 Sábado 21 de Febrero</p>
     <div class="countdown">
@@ -210,29 +233,53 @@
     const music = document.getElementById('bgMusic');
     const musicIcon = document.getElementById('musicIcon');
     const musicBtn = document.getElementById('musicBtn');
-
-    // AJUSTE: Volumen suave (30%)
     music.volume = 0.3;
 
-    // INICIO CONJUNTO (Música + Esconder Telón)
+    // --- SISTEMA DE CARGA PROFESIONAL ---
+    const assetsToLoad = [
+      'nube.png',
+      '2osita.png',
+      '2osito.png'
+    ];
+    let loadedCount = 0;
+
+    function checkAssets() {
+      loadedCount++;
+      if (loadedCount >= assetsToLoad.length) {
+        // Todo cargado
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('loadingText').innerText = '¡Todo listo para descubrir el secreto!';
+        document.getElementById('startBtn').style.display = 'inline-block';
+      }
+    }
+
+    // Pre-cargar imágenes vía JS
+    assetsToLoad.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      img.onload = checkAssets;
+      img.onerror = checkAssets; // Continuar aunque falle una
+    });
+
+    // Fallback: Si por alguna razón tarda demasiado, mostrar el botón a los 5 segundos
+    setTimeout(() => {
+        if(loadedCount < assetsToLoad.length) {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('startBtn').style.display = 'inline-block';
+        }
+    }, 5000);
+
     function startEverything() {
       document.getElementById('overlay').classList.add('hidden');
       music.play().then(() => {
           musicIcon.innerText = "🔊";
           musicBtn.classList.add('playing');
-      }).catch(e => console.log("Autoplay bloqueado"));
+      }).catch(e => console.log("Audio play blocked"));
     }
 
     function toggleMusic() {
-      if (music.paused) {
-        music.play();
-        musicIcon.innerText = "🔊";
-        musicBtn.classList.add('playing');
-      } else {
-        music.pause();
-        musicIcon.innerText = "🎵";
-        musicBtn.classList.remove('playing');
-      }
+      if (music.paused) { music.play(); musicIcon.innerText = "🔊"; musicBtn.classList.add('playing'); } 
+      else { music.pause(); musicIcon.innerText = "🎵"; musicBtn.classList.remove('playing'); }
     }
 
     // --- CONTADOR ---
@@ -246,7 +293,7 @@
       document.getElementById('s').textContent = Math.floor((diff/1000)%60);
     }, 1000);
 
-    // --- VALIDACIÓN Y MODALES ---
+    // --- RSVP Y MODALES ---
     function validateInput() {
       const name = document.getElementById('guestName');
       const btnYes = document.getElementById('btnYes');
@@ -270,22 +317,16 @@
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
     window.onclick = e => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
     document.onkeydown = e => { if (e.key === "Escape") closeAllModals(); };
 
-    // --- ENVÍO A GOOGLE SHEETS ---
     async function handleRSVP(choice) {
       const nameInput = document.getElementById('guestName');
       if(nameInput.value.trim() === "") { nameInput.classList.add('error'); nameInput.focus(); return; }
-      
       const name = nameInput.value.trim();
       const count = document.getElementById('guestCount').value;
       const attendance = (choice === 'si') ? "Sí asistirá" : "No podrá ir";
-
-      // --- PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ---
       const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyinrjCvyhOslJUfnQM0EbLw_m61674tkNIC7NL-40Lg7j5yhESs-_7g3wyAE2qn_vT/exec'; 
-
       const btn = (choice === 'si') ? document.getElementById('btnYes') : document.getElementById('btnNo');
       const originalText = btn.innerText;
       btn.innerText = "Enviando..."; btn.classList.add('disabled');
@@ -295,25 +336,20 @@
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ nombre: name, invitados: count, asistencia: attendance })
         });
-
         closeModal('rsvpModal');
         const title = document.getElementById('successTitle');
         const msg = document.getElementById('successMessage');
-
         if(choice === 'si') {
           title.innerText = "¡Qué alegría!";
-          msg.innerHTML = `¡Gracias por confirmar, <b>${name}</b>!<br><br>Estamos felices de recibirte junto a tus <b>${count}</b> invitados.<br>✨`;
+          msg.innerHTML = `¡Gracias por confirmar, <b>${name}</b>!<br><br>Estamos felices de recibirte junto a tus <b>${count}</b> invitados. ✨`;
           confetti({ particleCount: 180, spread: 85, origin: { y: 0.6 }, colors: ['#ffd700', '#e0b96a', '#fffce0', '#cfa34f'] });
         } else {
           title.innerText = "Te extrañaremos";
-          msg.innerHTML = `Gracias por avisarnos, <b>${name}</b>.<br><br>Sentiremos que no puedas venir, pero te enviaremos todo nuestro cariño. 🧸`;
+          msg.innerHTML = `Gracias por avisarnos, <b>${name}</b>.<br><br>Sentiremos que no puedas venir, pero te enviamos nuestro cariño. 🧸`;
         }
         setTimeout(() => openModal('successModal'), 400);
-      } catch (error) {
-        alert('Hubo un problema. Inténtalo de nuevo.');
-      } finally {
-        btn.innerText = originalText; btn.classList.remove('disabled');
-      }
+      } catch (error) { alert('Hubo un problema. Inténtalo de nuevo.'); } 
+      finally { btn.innerText = originalText; btn.classList.remove('disabled'); }
     }
 
     // --- ESTRELLAS DISPERSAS ---
