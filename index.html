@@ -313,6 +313,15 @@
       else { music.pause(); musicIcon.innerText = "🎵"; musicBtn.classList.remove('playing'); }
     }
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        music.pause();
+      } else {
+        if (musicBtn.classList.contains('playing')) {
+          music.play().catch(e => console.log("Audio reblocked"));
+        }
+      }
+    });
     // --- CONTADOR ---
     const target = new Date('2026-02-21T18:00:00').getTime();
     setInterval(()=>{
@@ -412,6 +421,7 @@
   </script>
 </body>
 </html>
+
 
 
 
