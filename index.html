@@ -301,11 +301,17 @@
       document.getElementById('s').textContent = Math.floor((diff/1000)%60);
     }, 1000);
 
-    function validateInput() {
-      const name = document.getElementById('guestName');
+   function validateInput() {
+      const nameInput = document.getElementById('guestName');
       const btnYes = document.getElementById('btnYes');
       const btnNo = document.getElementById('btnNo');
-      if(name.value.trim() !== "" && selectedGender !== "") {
+      
+      // .trim() elimina espacios al inicio y al final. 
+      // Si solo hay espacios, el resultado es "" (falsy).
+      const isNameValid = nameInput.value.trim().length > 0;
+      
+      // Verificamos que haya un nombre real y que se haya seleccionado un género
+      if (isNameValid && selectedGender !== "") {
         btnYes.classList.remove('disabled');
         btnNo.classList.remove('disabled');
       } else {
@@ -383,4 +389,5 @@
   </script>
 </body>
 </html>
+
 
