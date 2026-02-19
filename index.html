@@ -337,14 +337,14 @@
       const name = nameInput.value.trim();
       const count = document.getElementById('guestCount').value;
       const attendance = (choice === 'si') ? "Sí asistirá" : "No podrá ir";
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-HX4C8AjFBxs44T01i3bvNIqBKG9Z1qXmmKEr63e7ekEtlz3CL6iAfi_J1x6VqZHm_w/exec';
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlxksG3nzMRK0PfhUw6icNBnkTNS9c616dRJ1QFOqeQx4Rs-UF9d71RiL-c0BUnDqtNg/exec';
       const btn = (choice === 'si') ? document.getElementById('btnYes') : document.getElementById('btnNo');
       btn.innerText = "Enviando..."; btn.classList.add('disabled');
 
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ nombre: name, invitados: count, asistencia: attendance, voto: selectedGender })
+          body: JSON.stringify({ nombre: name, invitados: count, asistencia: attendance, voto: selectedGender, tipo: 'presencial' })
         });
         closeModal('rsvpModal');
         const msg = document.getElementById('successMessage');
@@ -389,5 +389,6 @@
   </script>
 </body>
 </html>
+
 
 
